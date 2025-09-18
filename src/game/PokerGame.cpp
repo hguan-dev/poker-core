@@ -122,7 +122,27 @@ void PokerGame::collectBlinds()
     // - Based on playerIsDealer, have dealer post small blind, other post big blind.
     // - Deduct chips from each, set their current bets, add to pot, set currentBet = bigBlind.
     // HINT: player->deductChips(...); player->setCurrentBet(...); etc.
-    throw std::logic_error("collectBlinds: TODO");
+    double smallBlind = 0.5;
+    double bigBlind = 1.0;
+    
+    if (playerIsDealer)
+    {
+        player->deductChips(smallBlind);
+        player->setCurrentBet(smallBlind);
+
+        bot->deductChips(bigBlind);
+        bot->setCurrentBet(bigBlind);
+    }
+    else {
+        player->deductChips(bigBlind);
+        player->setCurrentBet(bigBlind);
+
+        bot->deductChips(smallBlind);
+        bot->setCurrentBet(smallBlind);
+    }
+    addToPot(smallBlind + bigBlind);
+    setCurrentBet(bigBlind);
+    // throw std::logic_error("collectBlinds: TODO");
 }
 
 void PokerGame::shiftDealerButton()
@@ -135,7 +155,12 @@ void PokerGame::dealHoleCards()
     // TODO:
     // - Give each player two cards from deck->popTop().
     // - Look at the Player and Bot class to see how to add cards
-    throw std::logic_error("dealHoleCards: TODO");
+    std::array<Card,2> newHand = {deck->popTop(), deck->popTop()};
+    player->setHand(newHand);
+    newHand[0] = deck->popTop();
+    newHand[1] = deck->popTop();
+    bot->setHand(newHand);
+    // throw std::logic_error("dealHoleCards: TODO");
 }
 
 void PokerGame::dealCommunityCards(int numCards)
@@ -143,7 +168,10 @@ void PokerGame::dealCommunityCards(int numCards)
     // TODO:
     // - For i in [0, numCards): communityCards[communityCardIndex++] = deck->popTop();
     // - No burning here unless you want to add that rule explicitly.
-    throw std::logic_error("dealCommunityCards: TODO");
+    for (int i = 0; i < numCards; i++){
+        communityCards[communityCardIndex++] = deck->popTop();
+    }
+    // throw std::logic_error("dealCommunityCards: TODO");
 }
 
 double PokerGame::getCurrentBet()
@@ -172,27 +200,33 @@ void PokerGame::handlePhase(int numCommunityCards)
     // - If numCommunityCards > 0, call dealCommunityCards(numCommunityCards).
     // - Then run betting: executeBettingRound(*this);
     // - The betting round should manage calls/raises/folds and update pot/current bets via PokerGame API.
-    throw std::logic_error("handlePhase: TODO");
+    if (numCommunityCards > 0) { dealCommunityCards(numCommunityCards); }
+    executeBettingRound(*this);
+    // throw std::logic_error("handlePhase: TODO");
 }
 
 void PokerGame::preflop()
 {
-    throw std::logic_error("preflop: TODO");
+    handlePhase(0);
+    // throw std::logic_error("preflop: TODO");
 }
 
 void PokerGame::flop()
 {
-    throw std::logic_error("flop: TODO");
+    handlePhase(3);
+    // throw std::logic_error("flop: TODO");
 }
 
 void PokerGame::turn()
 {
-    throw std::logic_error("turn: TODO");
+    handlePhase(1);
+    // throw std::logic_error("turn: TODO");
 }
 
 void PokerGame::river()
 {
-    throw std::logic_error("river: TODO");
+    handlePhase(1);
+    //throw std::logic_error("river: TODO");
 }
 
 void PokerGame::payout()
@@ -201,7 +235,16 @@ void PokerGame::payout()
     // - Use HandEvaluator to evaluate both hands given communityCards.
     // - If tie: split pot (each gets pot/2). Else, winner gets full pot.
     // - Reset pot to 0 after paying out.
-    //
-    throw std::logic_error("payout: TODO");
+    HandEvaluator evaluator;
+
+    int playerHand = evaluator.evaluateHand(player->getHand(), communityCards);
+    int botHand = evaluator.evaluateHand(bot->getHand(), communityCards);
+
+    if (playerHand < botHand){ player->addChips(pot); }
+    if (botHand < playerHand){ bot->addChips(pot); }
+    if (playerHand == botHand){ player->addChips(pot/2); bot-> addChips(pot/2); }
+    
+    pot = 0;
+    // throw std::logic_error("payout: TODO");
 }
 
