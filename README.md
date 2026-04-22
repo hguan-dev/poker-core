@@ -1,4 +1,4 @@
-# poker-engine / poker-solver
+# poker-engine
 ## Contributors: Harry Guan, Max Breslin, Shun Fujita, Anna Zhao, Caroline Guerra, Ingrid Yeung
 
 ## Overview
