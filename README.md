@@ -1,5 +1,4 @@
 # poker-engine
-## Contributors: Harry Guan, Max Breslin, Shun Fujita, Anna Zhao, Caroline Guerra, Ingrid Yeung
 
 ## Overview
 - The Poker Engine program is written in C++, aiming to run fast simulations compatible with poker theory research
